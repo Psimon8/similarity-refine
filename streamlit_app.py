@@ -5,8 +5,7 @@ import re
 
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
-        # Return empty values for each expected output column if input is not a string
-        return [], 0, 0, 0
+        return [], 0, 0, 0  # Return empty values if not a string
     
     keywords_list = list_str.split(" | ")
     filtered_keywords = []
@@ -26,37 +25,23 @@ def parse_filter_format_keywords(list_str, threshold):
                 total_similarity += similarity
                 count += 1
 
-    if count == 0:
-        return [], 0, 0, 0
-
     avg_similarity = total_similarity / count if count > 0 else 0
     return filtered_keywords, total_volume, avg_similarity, count
 
 def main():
     st.title('Similarity Refine')
 
-    # File uploader
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
-
-        # Slider for threshold
         threshold = st.slider('Enter the similarity threshold (%)', min_value=10, max_value=100, value=40, step=10)
-
-        # Process the file
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand')
 
-        # Sorting the DataFrame by monthly volume in descending order
         df_sorted = df.sort_values(by='Vol. mensuel', ascending=False)
-
-        # Creating a list to store indices of rows to remove
         rows_to_remove = []
-
-        # Creating a set to store unique secondary keywords
         unique_secondary_keywords = set()
 
-        # Iterating over the DataFrame to identify rows to remove
         for index, row in df_sorted.iterrows():
             for keyword in row['Filtered Keywords']:
                 keyword_text = keyword.split(' (')[0]
@@ -66,46 +51,32 @@ def main():
             if primary_keyword_text in unique_secondary_keywords:
                 rows_to_remove.append(index)
 
-        # Removing identified rows
         df_filtered = df_sorted.drop(rows_to_remove)
-
         final_columns = {
-            'Mot-clé': 'Mots clé principal',
+            'Mot-clé': 'Nombre Mots clés Principal',
             'Vol. mensuel': 'Volume du mots clé principal',
             'Total Volume': 'Volume cumulé des mots clés secondaire',
             'Avg Similarity': '% moyen des degre de similarité des mots clés secondaire',
-            'Keyword Count': 'Nombre de mots clés secondaire'
+            'Keyword Count': 'Nombre Mots clés Secondaire'
         }
         df_final = df_filtered.rename(columns=final_columns)
-        
-        # Extraction des mots-clés formatés dans des colonnes séparées
-        for i in range(1, df_final['Nombre de mots clés secondaire'].max() + 1):
-            df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
 
-        # Suppression de la colonne 'Filtered Keywords'
-        df_final.drop('Filtered Keywords', axis=1, inplace=True)
+        if 'Nombre Mots clés Secondaire' in df_final.columns:
+            data = {
+                'Nombre Mots clés Principal': [len(df_final)],
+                'Nombre Mots clés Secondaire': [df_final['Nombre Mots clés Secondaire'].sum()]
+            }
+            st.bar_chart(data)
+        else:
+            st.error("The necessary column doesn't exist in the DataFrame.")
 
-        # Display bar chart for row count and keyword count sum
-        data = {
-            'Nombre Mots clés Principal': [len(df_final)],
-            'Nombre Mots clés Secondaire': [df_final['Nombre de mots clés secondaire'].sum()]
-        }
-        st.bar_chart(data)
-        
-        # Display DataFrame in Streamlit
         st.dataframe(df_final)
 
-        # Button to download the processed data
         if st.button('Download Data'):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
             with open(output_file_name, "rb") as file:
-                st.download_button(
-                    label="Download Excel",
-                    data=file,
-                    file_name=output_file_name,
-                    mime="application/vnd.ms-excel"
-                )
+                st.download_button(label="Download Excel", data=file, file_name=output_file_name, mime="application/vnd.ms-excel")
 
 if __name__ == "__main__":
     main()
