@@ -59,28 +59,27 @@ def main():
             'Keyword Count': 'Nombre Mots clés Secondaire'
         }
         df_final = df_filtered.rename(columns=final_columns)
-        
+
         # Extraction des mots-clés formatés dans des colonnes séparées
-        for i in range(1, df_final['Nombre de mots clés secondaire'].max() + 1):
-            df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
+        max_keywords = df_final['Nombre Mots clés Secondaire'].max() if 'Nombre Mots clés Secondaire' in df_final.columns else 0
+        if pd.notna(max_keywords):
+            for i in range(1, int(max_keywords) + 1):
+                df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
 
         # Suppression de la colonne 'Filtered Keywords'
+        if 'Filtered Keywords' in df_final.columns:
             df_final.drop('Filtered Keywords', axis=1, inplace=True)
-            
-        # Ensure the necessary columns exist
+
+        # Display metrics and bar chart if the column exists
         if 'Nombre Mots clés Secondaire' in df_final.columns:
             total_rows = len(df_final)
             total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
 
-            st.metric(label="Total Rows", value=total_rows)
+            st.metric(label="Total Primary Keywords", value=total_rows)
             st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
 
-            data = {
-                'Metrics': ['Total Rows', 'Total Secondary Keywords'],
-                'Values': [total_rows, total_secondary_keywords]
-            }
+            data = {'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'], 'Values': [total_rows, total_secondary_keywords]}
             st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
-
         else:
             st.error("The necessary column doesn't exist in the DataFrame.")
 
