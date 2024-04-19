@@ -41,8 +41,8 @@ def main():
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
 
-        # Input for threshold
-        threshold = st.number_input('Enter the similarity threshold (%)', min_value=0.0, value=40.0, step=0.1)
+        # Slider for threshold
+        threshold = st.slider('Enter the similarity threshold (%)', min_value=10, max_value=100, value=40, step=10)
         
         # Process the file
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
