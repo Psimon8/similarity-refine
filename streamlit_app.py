@@ -43,7 +43,7 @@ def main():
 
         # Slider for threshold
         threshold = st.slider('Enter the similarity threshold (%)', min_value=10, max_value=100, value=40, step=10)
-        
+
         # Process the file
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand')
@@ -82,15 +82,11 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Extraction des mots-clés formatés dans des colonnes séparées
-        for i in range(1, df_final['Nombre de mots clés secondaire'].max() + 1):
-            df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
-
-        # Suppression de la colonne 'Filtered Keywords'
-        df_final.drop('Filtered Keywords', axis=1, inplace=True)
-
         # Display DataFrame in Streamlit
         st.dataframe(df_final)
+
+        # Display bar chart for row count
+        st.bar_chart({'Row Count': [len(df_final)]})
 
         # Button to download the processed data
         if st.button('Download Data'):
