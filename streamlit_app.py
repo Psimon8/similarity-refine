@@ -26,7 +26,6 @@ def parse_filter_format_keywords(list_str, threshold):
                 total_similarity += similarity
                 count += 1
 
-    # Ensure output is consistent even if no keywords match
     if count == 0:
         return [], 0, 0, 0
 
@@ -59,12 +58,10 @@ def main():
 
         # Iterating over the DataFrame to identify rows to remove
         for index, row in df_sorted.iterrows():
-            # Adding secondary keywords to the set
             for keyword in row['Filtered Keywords']:
-                keyword_text = keyword.split(' (')[0]  # Extracting only the textual part
+                keyword_text = keyword.split(' (')[0]
                 unique_secondary_keywords.add(keyword_text)
 
-            # Checking if the primary keyword is in the set of secondary keywords
             primary_keyword_text = row['Mot-clé'].split(' (')[0]
             if primary_keyword_text in unique_secondary_keywords:
                 rows_to_remove.append(index)
@@ -72,7 +69,6 @@ def main():
         # Removing identified rows
         df_filtered = df_sorted.drop(rows_to_remove)
 
-        # Assuming final_columns are defined as required
         final_columns = {
             'Mot-clé': 'Mots clé principal',
             'Vol. mensuel': 'Volume du mots clé principal',
@@ -82,8 +78,12 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Display bar chart for row count
-        st.bar_chart({'Row Count': [len(df_final)]})
+        # Display bar chart for row count and keyword count sum
+        data = {
+            'Row Count': [len(df_final)],
+            'Total Keywords': [df_final['Keyword Count'].sum()]
+        }
+        st.bar_chart(data)
         
         # Display DataFrame in Streamlit
         st.dataframe(df_final)
