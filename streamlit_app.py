@@ -48,8 +48,29 @@ def main():
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand')
 
-        # Assume df_filtered is obtained through some filtering or sorting
-        df_filtered = df  # Example, you might want to replace or adjust this line based on actual filtering logic
+        # Sorting the DataFrame by monthly volume in descending order
+        df_sorted = df.sort_values(by='Vol. mensuel', ascending=False)
+
+        # Creating a list to store indices of rows to remove
+        rows_to_remove = []
+
+        # Creating a set to store unique secondary keywords
+        unique_secondary_keywords = set()
+
+        # Iterating over the DataFrame to identify rows to remove
+        for index, row in df_sorted.iterrows():
+            # Adding secondary keywords to the set
+            for keyword in row['Filtered Keywords']:
+                keyword_text = keyword.split(' (')[0]  # Extracting only the textual part
+                unique_secondary_keywords.add(keyword_text)
+
+            # Checking if the primary keyword is in the set of secondary keywords
+            primary_keyword_text = row['Mot-clé'].split(' (')[0]
+            if primary_keyword_text in unique_secondary_keywords:
+                rows_to_remove.append(index)
+
+        # Removing identified rows
+        df_filtered = df_sorted.drop(rows_to_remove)
 
         # Assuming final_columns are defined as required
         final_columns = {
