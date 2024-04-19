@@ -1,5 +1,4 @@
 import streamlit as st
-import openpyxl
 import pandas as pd
 import re
 
@@ -60,16 +59,18 @@ def main():
             'Keyword Count': 'Nombre Mots clés Secondaire'
         }
         df_final = df_filtered.rename(columns=final_columns)
-        
-    # Extraction des mots-clés formatés dans des colonnes séparées
-        for i in range(1, df_final['Nombre de mots clés secondaire'].max() + 1):
-             df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
 
-    # Suppression de la colonne 'Filtered Keywords'
-        df_final.drop('Filtered Keywords', axis=1, inplace=True)
-
-
+        # Validate column 'Nombre Mots clés Secondaire' before further processing
         if 'Nombre Mots clés Secondaire' in df_final.columns:
+            # Extraction des mots-clés formatés dans des colonnes séparées
+            max_keywords = df_final['Nombre Mots clés Secondaire'].max()
+            if pd.notna(max_keywords):
+                for i in range(1, int(max_keywords) + 1):
+                    df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
+
+            # Suppression de la colonne 'Filtered Keywords'
+            df_final.drop('Filtered Keywords', axis=1, inplace=True)
+
             data = {
                 'Nombre Mots clés Principal': [len(df_final)],
                 'Nombre Mots clés Secondaire': [df_final['Nombre Mots clés Secondaire'].sum()]
