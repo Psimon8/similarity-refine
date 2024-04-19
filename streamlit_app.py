@@ -3,11 +3,11 @@ import openpyxl
 import pandas as pd
 import re
 
-# Define the keyword parsing function
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
-        return pd.DataFrame()  # Returns empty DataFrame if not a string
-
+        # Return empty values for each expected output column if input is not a string
+        return [], 0, 0, 0
+    
     keywords_list = list_str.split(" | ")
     filtered_keywords = []
     total_volume = 0
@@ -25,6 +25,10 @@ def parse_filter_format_keywords(list_str, threshold):
                 total_volume += volume
                 total_similarity += similarity
                 count += 1
+
+    # Ensure output is consistent even if no keywords match
+    if count == 0:
+        return [], 0, 0, 0
 
     avg_similarity = total_similarity / count if count > 0 else 0
     return filtered_keywords, total_volume, avg_similarity, count
