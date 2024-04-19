@@ -34,7 +34,7 @@ def parse_filter_format_keywords(list_str, threshold):
     return filtered_keywords, total_volume, avg_similarity, count
 
 def main():
-    st.title('Keyword Analysis Tool')
+    st.title('Similarity Refine')
 
     # File uploader
     uploaded_file = st.file_uploader("Choose a file")
