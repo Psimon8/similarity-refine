@@ -82,11 +82,11 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Display DataFrame in Streamlit
-        st.dataframe(df_final)
-
         # Display bar chart for row count
         st.bar_chart({'Row Count': [len(df_final)]})
+        
+        # Display DataFrame in Streamlit
+        st.dataframe(df_final)
 
         # Button to download the processed data
         if st.button('Download Data'):
