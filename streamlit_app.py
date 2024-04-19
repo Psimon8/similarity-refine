@@ -87,8 +87,8 @@ def main():
 
         # Display bar chart for row count and keyword count sum
         data = {
-            'Row Count': [len(df_final)],
-            'Total Keywords': [df_final['Nombre de mots clés secondaire'].sum()]
+            'Nombre Mots clés Principal': [len(df_final)],
+            'Nombre Mots clés Secondaire': [df_final['Nombre de mots clés secondaire'].sum()]
         }
         st.bar_chart(data)
         
