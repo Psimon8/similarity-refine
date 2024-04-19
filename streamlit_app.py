@@ -60,22 +60,20 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Validate column 'Nombre Mots clés Secondaire' before further processing
+        # Ensure the necessary columns exist
         if 'Nombre Mots clés Secondaire' in df_final.columns:
-            # Extraction des mots-clés formatés dans des colonnes séparées
-            max_keywords = df_final['Nombre Mots clés Secondaire'].max()
-            if pd.notna(max_keywords):
-                for i in range(1, int(max_keywords) + 1):
-                    df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
+            total_rows = len(df_final)
+            total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
 
-            # Suppression de la colonne 'Filtered Keywords'
-            df_final.drop('Filtered Keywords', axis=1, inplace=True)
+            st.metric(label="Total Rows", value=total_rows)
+            st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
 
             data = {
-                'Nombre Mots clés Principal': [len(df_final)],
-                'Nombre Mots clés Secondaire': [df_final['Nombre Mots clés Secondaire'].sum()]
+                'Metrics': ['Total Rows', 'Total Secondary Keywords'],
+                'Values': [total_rows, total_secondary_keywords]
             }
-            st.bar_chart(data)
+            st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
+
         else:
             st.error("The necessary column doesn't exist in the DataFrame.")
 
