@@ -48,15 +48,35 @@ def main():
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand')
 
+        # Assume df_filtered is obtained through some filtering or sorting
+        df_filtered = df  # Example, you might want to replace or adjust this line based on actual filtering logic
+
+        # Assuming final_columns are defined as required
+        final_columns = {
+            'Mot-clé': 'Mots clé principal',
+            'Vol. mensuel': 'Volume du mots clé principal',
+            'Total Volume': 'Volume cumulé des mots clés secondaire',
+            'Avg Similarity': '% moyen des degre de similarité des mots clés secondaire',
+            'Keyword Count': 'Nombre de mots clés secondaire'
+        }
+        df_final = df_filtered.rename(columns=final_columns)
+
+        # Extraction des mots-clés formatés dans des colonnes séparées
+        for i in range(1, df_final['Nombre de mots clés secondaire'].max() + 1):
+            df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
+
+        # Suppression de la colonne 'Filtered Keywords'
+        df_final.drop('Filtered Keywords', axis=1, inplace=True)
+
         # Display DataFrame in Streamlit
-        st.dataframe(df)
+        st.dataframe(df_final)
 
         # Button to download the processed data
         if st.button('Download Data'):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
-            df.to_excel(output_file_name, index=False)
+            df_final.to_excel(output_file_name, index=False)
             with open(output_file_name, "rb") as file:
-                btn = st.download_button(
+                st.download_button(
                     label="Download Excel",
                     data=file,
                     file_name=output_file_name,
