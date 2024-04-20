@@ -1,7 +1,11 @@
 import streamlit as st
 import pandas as pd
 import re
-import altair as alt  # Import Altair for advanced plotting
+
+st.set_page_config(
+    page_title="Similarity Refine",
+    page_icon="🥥"
+)
 
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
@@ -34,7 +38,6 @@ def main():
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
-        total_rows_of_imported_file = len(df)  # Store the total number of rows in the imported file
         threshold = st.slider('Enter the similarity threshold (%)', min_value=0, max_value=100, value=40, step=10)
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand')
@@ -62,25 +65,29 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        total_rows = len(df_final)
-        total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
+        if 'Nombre Mots clés Secondaire' in df_final.columns:
+            total_rows = len(df_final)
+            total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
 
-        # Data for the bar chart
-        data = pd.DataFrame({
-            'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'],
-            'Values': [total_rows, total_secondary_keywords]
-        })
+            max_keywords = df_final['Nombre Mots clés Secondaire'].max() if pd.notna(df_final['Nombre Mots clés Secondaire'].max()) else 0
+            for i in range(1, int(max_keywords) + 1):
+                df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
 
-        # Create an Altair bar chart
-        chart = alt.Chart(data).mark_bar().encode(
-            x='Metrics',
-            y=alt.Y('Values:Q', scale=alt.Scale(domain=[0, total_rows_of_imported_file]))
-        ).properties(
-            width=400,
-            height=300
-        )
+            df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
-        st.altair_chart(chart, use_container_width=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric(label="Total Primary Keywords", value=total_rows)
+                st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
+
+            with col2:
+                data = {
+                    'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'],
+                    'Values': [total_rows, total_secondary_keywords]
+                }
+                st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
+        else:
+            st.error("The necessary column doesn't exist in the DataFrame.")
 
         st.dataframe(df_final)
 
