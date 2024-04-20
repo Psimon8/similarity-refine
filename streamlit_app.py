@@ -80,7 +80,8 @@ def main():
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                st.metric(label="Total Primary Keywords", value=total_rows)
+                st.text("Numbers of Primary Keywords")
+                st.metric(value=total_rows)
                 st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
                 st.metric(label="Total Primary Volume", value=total_primary_volume)
                 st.metric(label="Total Cumulative Secondary Volume", value=total_secondary_volume)
