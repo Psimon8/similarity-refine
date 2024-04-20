@@ -5,7 +5,6 @@ import re
 st.set_page_config(
     page_title="Similarity Refine",
     page_icon="🥥",
-    layout="wide"
 )
 
 def parse_filter_format_keywords(list_str, threshold):
@@ -84,7 +83,6 @@ def main():
             col1, col2 = st.columns(2)
             with col1:
                 st.metric(label="Total Primary Keywords", value=total_rows)
-            with col2:
                 st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
 
             data = {'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'], 'Values': [total_rows, total_secondary_keywords]}
@@ -92,6 +90,9 @@ def main():
 
         else:
             st.error("The necessary column doesn't exist in the DataFrame.")
+            
+            with col2:
+                st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
 
 
         st.dataframe(df_final)
