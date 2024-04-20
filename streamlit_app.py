@@ -86,8 +86,14 @@ def main():
 
             with col2:
                 data = {
-                    'Metrics': ['Primary KWs', 'Primary SV', 'Secondary KWs', 'Secondary SV'],
-                    'Values': [total_rows, total_primary_volume, total_secondary_keywords, total_secondary_volume]
+                    'Metrics': ['Primary KWs', 'Secondary KWs'],
+                    'Values': [total_rows, total_secondary_keywords]
+                }
+                st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
+                
+                data = {
+                    'Metrics': ['Primary SV','Secondary SV'],
+                    'Values': [total_primary_volume, total_secondary_volume]
                 }
                 st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
         else:
