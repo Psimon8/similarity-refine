@@ -76,7 +76,7 @@ def main():
             df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
         # Display metrics and bar chart if the column exists
-          if 'Nombre Mots clés Secondaire' in df_final.columns:
+    if 'Nombre Mots clés Secondaire' in df_final.columns:
         col1, col2 = st.columns(2)
         with col1:
             st.metric(label="Total Primary Keywords", value=total_rows)
