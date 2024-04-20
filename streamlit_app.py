@@ -77,7 +77,9 @@ def main():
 
             df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
+            container = st.container(border=True)
             col1, col2, col3 = st.columns(3)
+            
             with col1:
                 st.metric(label="Total Primary Keywords", value=total_rows)
                 st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
@@ -99,6 +101,7 @@ def main():
                 st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
         else:
             st.error("The necessary column doesn't exist in the DataFrame.")
+
 
         st.dataframe(df_final)
 
