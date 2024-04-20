@@ -87,8 +87,7 @@ def main():
 
                 data = {'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'], 'Values': [total_rows, total_secondary_keywords]}
                 st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
-    
-            else:
+               else:
                 st.error("The necessary column doesn't exist in the DataFrame.")
             
             with col2:
