@@ -3,8 +3,8 @@ import pandas as pd
 import re
 
 st.set_page_config(
-    page_title="Similarity Refine"
-    page_icon="🥥"
+    page_title="Similarity Refine",
+    page_icon="🥥",
     layout="wide"
 )
 
