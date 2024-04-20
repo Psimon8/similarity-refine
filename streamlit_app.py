@@ -86,15 +86,17 @@ def main():
                 st.metric(label="Total Cumulative Secondary Volume", value=total_secondary_volume)
 
             with col2:
+                st.header("Numbers KWs")
                 data = {
-                    'Metrics': ['Primary KWs', 'Secondary KWs'],
+                    'Metrics': ['Primary', 'Secondary'],
                     'Values': [total_rows, total_secondary_keywords]
                 }
                 st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
                 
-            with col3:    
+            with col3:   
+                st.header("Search Volume")
                 data = {
-                    'Metrics': ['Primary SV','Secondary SV'],
+                    'Metrics': ['Primary','Secondary'],
                     'Values': [total_primary_volume, total_secondary_volume]
                 }
                 st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
