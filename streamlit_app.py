@@ -68,6 +68,8 @@ def main():
         if 'Nombre Mots clés Secondaire' in df_final.columns:
             total_rows = len(df_final)
             total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
+            total_primary_volume = df_final['Volume du mots clé principal'].sum()
+            total_secondary_volume = df_final['Volume cumulé des mots clés secondaire'].sum()
 
             max_keywords = df_final['Nombre Mots clés Secondaire'].max() if pd.notna(df_final['Nombre Mots clés Secondaire'].max()) else 0
             for i in range(1, int(max_keywords) + 1):
@@ -79,6 +81,8 @@ def main():
             with col1:
                 st.metric(label="Total Primary Keywords", value=total_rows)
                 st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
+                st.metric(label="Total Primary Volume", value=total_primary_volume)
+                st.metric(label="Total Cumulative Secondary Volume", value=total_secondary_volume)
 
             with col2:
                 data = {
