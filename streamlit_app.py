@@ -85,11 +85,11 @@ def main():
                 st.metric(label="Total Primary Keywords", value=total_rows)
                 st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
 
-            data = {'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'], 'Values': [total_rows, total_secondary_keywords]}
-            st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
-
-        else:
-            st.error("The necessary column doesn't exist in the DataFrame.")
+                data = {'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'], 'Values': [total_rows, total_secondary_keywords]}
+                st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
+    
+            else:
+                st.error("The necessary column doesn't exist in the DataFrame.")
             
             with col2:
                 st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
