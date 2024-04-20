@@ -76,22 +76,23 @@ def main():
             df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
         # Display metrics and bar chart if the column exists
-        if 'Nombre Mots clés Secondaire' in df_final.columns:
-            total_rows = len(df_final)
-            total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
+          if 'Nombre Mots clés Secondaire' in df_final.columns:
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(label="Total Primary Keywords", value=total_rows)
+            st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
 
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric(label="Total Primary Keywords", value=total_rows)
-                st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
+            data = {
+                'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'],
+                'Values': [total_rows, total_secondary_keywords]
+            }
+            st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
 
-                data = {'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'], 'Values': [total_rows, total_secondary_keywords]}
-                st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
-               else:
-                st.error("The necessary column doesn't exist in the DataFrame.")
-            
-            with col2:
-                st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
+        with col2:
+            st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
+            # Any additional visualizations or metrics can go here
+    else:
+        st.error("The necessary column doesn't exist in the DataFrame.")
 
 
         st.dataframe(df_final)
