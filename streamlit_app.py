@@ -2,11 +2,6 @@ import streamlit as st
 import pandas as pd
 import re
 
-st.set_page_config(
-    page_title="Similarity Refine",
-    page_icon="🥥",
-)
-
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
         return [], 0, 0, 0  # Return empty values if not a string
@@ -66,34 +61,32 @@ def main():
         df_final = df_filtered.rename(columns=final_columns)
 
         # Extraction des mots-clés formatés dans des colonnes séparées
-        max_keywords = df_final['Nombre Mots clés Secondaire'].max() if 'Nombre Mots clés Secondaire' in df_final.columns else 0
-        if pd.notna(max_keywords):
-            for i in range(1, int(max_keywords) + 1):
-                df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
+        for i in range(1, df_final['Nombre de mots clés secondaire'].max() + 1):
+            df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
 
         # Suppression de la colonne 'Filtered Keywords'
-        if 'Filtered Keywords' in df_final.columns:
-            df_final.drop('Filtered Keywords', axis=1, inplace=True)
+        df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
-        # Display metrics and bar chart if the column exists
-    if 'Nombre Mots clés Secondaire' in df_final.columns:
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric(label="Total Primary Keywords", value=total_rows)
-            st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
+        # Ensure columns exist and calculate metrics
+        if 'Nombre Mots clés Secondaire' in df_final.columns:
+            total_rows = len(df_final)
+            total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
 
-            data = {
-                'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'],
-                'Values': [total_rows, total_secondary_keywords]
-            }
-            st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric(label="Total Primary Keywords", value=total_rows)
+                st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
 
-        with col2:
-            st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
-            # Any additional visualizations or metrics can go here
-    else:
-        st.error("The necessary column doesn't exist in the DataFrame.")
+                data = {
+                    'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'],
+                    'Values': [total_rows, total_secondary_keywords]
+                }
+                st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
 
+            with col2:
+                st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
+        else:
+            st.error("The necessary column doesn't exist in the DataFrame.")
 
         st.dataframe(df_final)
 
