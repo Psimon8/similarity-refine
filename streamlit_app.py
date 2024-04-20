@@ -4,8 +4,9 @@ import re
 
 
 st.set_page_config(
-    page_title="Similarity Refine"
+    page_title="Similarity Refine",
     page_icon="🥥"
+)
 
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
