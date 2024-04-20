@@ -77,7 +77,7 @@ def main():
 
             df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric(label="Total Primary Keywords", value=total_rows)
                 st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
@@ -91,6 +91,7 @@ def main():
                 }
                 st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
                 
+            with col3:    
                 data = {
                     'Metrics': ['Primary SV','Secondary SV'],
                     'Values': [total_primary_volume, total_secondary_volume]
