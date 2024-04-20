@@ -60,17 +60,15 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Extraction des mots-clés formatés dans des colonnes séparées
-        for i in range(1, df_final['Nombre Mots clés secondaire'].max() + 1):
-            df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
-
-        # Suppression de la colonne 'Filtered Keywords'
-        df_final.drop('Filtered Keywords', axis=1, inplace=True)
-
-        # Ensure columns exist and calculate metrics
         if 'Nombre Mots clés Secondaire' in df_final.columns:
             total_rows = len(df_final)
             total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
+
+            max_keywords = df_final['Nombre Mots clés Secondaire'].max() if pd.notna(df_final['Nombre Mots clés Secondaire'].max()) else 0
+            for i in range(1, int(max_keywords) + 1):
+                df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
+
+            df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
             col1, col2 = st.columns(2)
             with col1:
