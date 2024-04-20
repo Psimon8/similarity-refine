@@ -61,7 +61,7 @@ def main():
         df_final = df_filtered.rename(columns=final_columns)
 
         # Extraction des mots-clés formatés dans des colonnes séparées
-        for i in range(1, df_final['Nombre de mots clés secondaire'].max() + 1):
+        for i in range(1, df_final['Nombre Mots clés secondaire'].max() + 1):
             df_final[f'Colonne F{i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
 
         # Suppression de la colonne 'Filtered Keywords'
