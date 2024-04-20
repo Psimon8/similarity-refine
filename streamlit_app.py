@@ -86,7 +86,7 @@ def main():
                 st.metric(label="Total Cumulative Secondary Volume", value=total_secondary_volume)
 
             with col2:
-                st.text("Numbers KWs")
+                st.text("Numbers of Keywords")
                 data = {
                     'Metrics': ['Primary', 'Secondary'],
                     'Values': [total_rows, total_secondary_keywords]
