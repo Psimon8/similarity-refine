@@ -82,7 +82,7 @@ def main():
 
             with col2:
                 data = {
-                    'Metrics': ['Total Primary Keywords', 'Total Secondary Keywords'],
+                    'Metrics': ['Primary', 'Secondary'],
                     'Values': [total_rows, total_secondary_keywords]
                 }
                 st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
