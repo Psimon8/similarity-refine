@@ -50,12 +50,13 @@ def main():
         rows_to_remove = []
         unique_secondary_keywords = set()
 
-        # Correction de la faute de frappe : utilisation de `iterrows()`
+        # Correction : Utilisation de `iterrows()`
         for index, row in df_sorted.iterrows():
             for keyword in row['Filtered Keywords']:
                 unique_secondary_keywords.add(keyword.split(' (')[0])
 
-            if row['Mot-clé'].split(' (')[0] in unique_secondary_keywords:
+            primary_keyword = row['Mot-clé'].split(' (')[0]
+            if primary_keyword in unique_secondary_keywords:
                 rows_to_remove.append(index)
 
         df_filtered = df_sorted.drop(rows_to_remove)
@@ -70,9 +71,9 @@ def main():
         df_final = df_filtered.rename(columns=final_columns)
 
         # Déplacer "Liste MC et %" à la fin
-        column_order = [col for col in df_final.columns if col != 'Liste MC et %']
+        column_order = [col for col in df_final.columns si col != 'Liste MC et %']
         column_order.append('Liste MC et %')
-        df_final = df_final[column_order]
+        df_final = df_final[column_order)
 
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
@@ -106,7 +107,7 @@ def main():
         if st.button("Download Data"):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
-            with open(output_file_name, "rb") as file, 
+            with open(output_file_name, "rb") as file:
                 st.download_button(
                     label="Download Excel",
                     data=file,
