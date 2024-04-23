@@ -9,7 +9,7 @@ st.set_page_config(
 
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
-        return [], 0, 0, 0
+        return [], 0, 0, 0  # Return empty values if not une chaîne
     
     keywords_list = list_str.split(" | ")
     filtered_keywords = []
@@ -20,7 +20,9 @@ def parse_filter_format_keywords(list_str, threshold):
     for keyword_str in keywords_list:
         match = re.match(r"(.+) \((\d+)\): (\d+\.\d+) %", keyword_str)
         if match:
-            keyword, volume, similarity = (int(volume), float(similarity)) if match.groups()
+            keyword, volume, similarity = match.groups()  # Corriger le déballage de tuple
+            volume = int(volume)  # Convertir en entier
+            similarity = float(similarity)  # Convertir en float
             if similarity >= threshold:
                 filtered_keywords.append(f"{keyword} ({volume}): {similarity} %")
                 total_volume += volume
@@ -31,15 +33,14 @@ def parse_filter_format_keywords(list_str, threshold):
     return filtered_keywords, total_volume, avg_similarity, count
 
 def main():
-    st.title('Similarity Refine')
+    st.title("Similarity Refine")
 
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
-        threshold = st.slider(
-            'Enter the similarity threshold (%)', min_value=0, max_value=100, value=40, step=10
-        )
-        
+        threshold = st.slider("Enter the similarity threshold (%)", min_value=0, max_value=100, value=40, step=10)
+
+        # Appliquer le parsing
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand'
         )
@@ -48,7 +49,7 @@ def main():
         rows_to_remove = []
         unique_secondary_keywords = set()
 
-        for index, row in df_sorted.iterrows():
+        for index, row in df_sorted.iterates():
             for keyword in row['Filtered Keywords']:
                 unique_secondary_keywords.add(keyword.split(' (')[0])
 
@@ -65,19 +66,12 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        max_keywords = df_final['Nombre Mots clés Secondaire'].max() if pd.notna(df_final['Nombre Mots clés Secondaire'].max()) else 0
-        
-        for i in range(1, int(max_keywords) + 1):
-            df_final[f'MC secondaire {i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i-1] if len(x) >= i else None)
+        # Déplacer "Liste MC et %" à la fin
+        column_order = [col for col in df_final.columns if col != 'Liste MC et %']
+        column_order.append('Liste MC et %')
+        df_final = df_final[column_order]
 
-        df_final.drop('Filtered Keywords', axis=1, inplace=True)
-
-        # Reorganize columns to move 'Liste MC et %' to the end
-        new_column_order = [col for col in df_final.columns if col != 'Liste MC et %']
-        new_column_order.append('Liste MC et %')
-        df_final = df_final[new_column_order]
-
-        # Display metrics and visualizations
+        # Ajouter les métriques et visualisations
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
         total_primary_volume = df_final['Volume du mots clé principal'].sum()
@@ -86,10 +80,10 @@ def main():
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric(label="Total Primary Keywords", value=total_primary_keywords)
-            st.metric(label="Total Secondary Keywords", value=total_secondary_keywords)
-            st.metric(label="Total Primary Volume", value=total_primary_volume)
-            st.metric(label="Total Cumulative Secondary Volume", value=total_secondary_volume)
+            st.metric("Total Primary Keywords", total_primary_keywords)
+            st.metric("Total Secondary Keywords", total_secondary_keywords)
+            st.metric("Total Primary Volume", total_primary_volume)
+            st.metric("Total Cumulative Secondary Volume", total_secondary_volume)
 
         with col2:
             data = {
@@ -105,15 +99,20 @@ def main():
             }
             st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
 
-        # Display final DataFrame
+        # Afficher le DataFrame final
         st.dataframe(df_final)
 
-        # Download the final data
-        if st.button('Download Data'):
+        # Bouton pour télécharger les données
+        if st.button("Download Data"):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
             with open(output_file_name, "rb") as file:
-                st.download_button(label="Download Excel", data=file, file_name=output_file_name, mime="application/vnd.ms-excel")
+                st.download_button(
+                    label="Download Excel",
+                    data=file,
+                    file_name=output_file_name,
+                    mime="application/vnd.ms-excel",
+                )
 
 if __name__ == "__main__":
     main()
