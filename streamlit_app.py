@@ -9,7 +9,7 @@ st.set_page_config(
 
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
-        return [], 0, 0, 0  # Return empty values if not une chaîne
+        return [], 0, 0, 0
     
     keywords_list = list_str.split(" | ")
     filtered_keywords = []
@@ -20,16 +20,16 @@ def parse_filter_format_keywords(list_str, threshold):
     for keyword_str in keywords_list:
         match = re.match(r"(.+) \((\d+)\): (\d+\.\d+) %", keyword_str)
         if match:
-            keyword, volume, similarity = match.groups()  # Corriger le déballage de tuple
-            volume = int(volume)  # Convertir en entier
-            similarity = float(similarity)  # Convertir en float
+            keyword, volume, similarity = match.groups()
+            volume = int(volume)
+            similarity = float(similarity)
             if similarity >= threshold:
                 filtered_keywords.append(f"{keyword} ({volume}): {similarity} %")
                 total_volume += volume
                 total_similarity += similarity
                 count += 1
 
-    avg_similarity = total_similarity / count if count > 0 else 0
+    avg_similarity = total_similarity / count si count > 0 else 0
     return filtered_keywords, total_volume, avg_similarity, count
 
 def main():
@@ -38,9 +38,10 @@ def main():
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
-        threshold = st.slider("Enter the similarity threshold (%)", min_value=0, max_value=100, value=40, step=10)
-
-        # Appliquer le parsing
+        threshold = st.slider(
+            'Enter the similarity threshold (%)', min_value=0, max_value=100, value=40, step=10
+        )
+        
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand'
         )
@@ -49,7 +50,8 @@ def main():
         rows_to_remove = []
         unique_secondary_keywords = set()
 
-        for index, row in df_sorted.iterates():
+        # Correction de la faute de frappe : utilisation de `iterrows()`
+        for index, row in df_sorted.iterrows():
             for keyword in row['Filtered Keywords']:
                 unique_secondary_keywords.add(keyword.split(' (')[0])
 
@@ -57,6 +59,7 @@ def main():
                 rows_to_remove.append(index)
 
         df_filtered = df_sorted.drop(rows_to_remove)
+        
         final_columns = {
             'Mot-clé': 'Nombre Mots clés Principal',
             'Vol. mensuel': 'Volume du mots clé principal',
@@ -71,7 +74,6 @@ def main():
         column_order.append('Liste MC et %')
         df_final = df_final[column_order]
 
-        # Ajouter les métriques et visualisations
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
         total_primary_volume = df_final['Volume du mots clé principal'].sum()
@@ -99,14 +101,12 @@ def main():
             }
             st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
 
-        # Afficher le DataFrame final
         st.dataframe(df_final)
 
-        # Bouton pour télécharger les données
         if st.button("Download Data"):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
-            with open(output_file_name, "rb") as file:
+            with open(output_file_name, "rb") as file, 
                 st.download_button(
                     label="Download Excel",
                     data=file,
