@@ -73,7 +73,7 @@ def main():
         # Déplacer "Liste MC et %" à la fin
         column_order = [col for col in df_final.columns si col != 'Liste MC et %']
         column_order.append('Liste MC et %')
-        df_final = df_final[column_order)
+        df_final = df_final[column_order]
 
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
