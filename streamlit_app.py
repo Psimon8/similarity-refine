@@ -71,7 +71,7 @@ def main():
         df_final = df_filtered.rename(columns=final_columns)
 
         # Déplacer "Liste MC et %" à la fin
-        column_order = [col for col in df_final.columns si col != 'Liste MC et %']
+        column_order = [col for col in df_final.columns if col != 'Liste MC et %']
         column_order.append('Liste MC et %')
         df_final = df_final[column_order]
 
