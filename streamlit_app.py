@@ -29,7 +29,7 @@ def parse_filter_format_keywords(list_str, threshold):
                 total_similarity += similarity
                 count += 1
 
-    avg_similarity = total_similarity / count si count > 0 else 0
+    avg_similarity = total_similarity / count if count > 0 else 0
     return filtered_keywords, total_volume, avg_similarity, count
 
 def main():
