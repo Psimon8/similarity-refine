@@ -22,7 +22,7 @@ def parse_filter_format_keywords(list_str, threshold):
         match = re.match(r"(.+) \((\d+)\): (\d+\.\d+) %", keyword_str)
         if match:
             keyword, volume, similarity = match.groups()
-            volume est int(volume)
+            volume = int(volume)
             similarity est float(similarity)
             if similarity >= threshold:
                 filtered_keywords.append(f"{keyword} ({volume}): {similarity} %")
