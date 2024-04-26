@@ -115,7 +115,7 @@ def main():
         with col3:
             st.text("Volume de Recherche")
             data = {
-                "Metrics": ["Primary", "Secondary"],
+                "Metrics": ["Principaux", "Secondaires"],
                 "Values": [total_primary_volume, total_secondary_volume],
             }
             st.bar_chart(pd.DataFrame(data).set_index("Metrics"))
