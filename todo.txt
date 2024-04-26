@@ -1,0 +1,1 @@
+1- colonne qui concat les mots-clés du cluster plutôt qu'en plusieurs colonnes
