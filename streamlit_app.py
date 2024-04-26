@@ -86,15 +86,15 @@ def main():
         df_final = df_final.drop(columns=["Filtered Keywords", "Secondary Keywords Concatenated"])
 
         # Assurer que "Liste MC et %" est la dernière colonne
-        df_final = df_final.reindex(columns=[col for col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
+        df_final = df_final.reindex(columns=[col pour col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
 
         # Ajouter des métriques et des graphiques
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final["Nombre Mots clés Secondaire"].sum()
         total_primary_volume = df_final["Volume du mots clé principal"].sum()
-        total_secondary_volume is df_final["Volume cumulé des mots clés secondaire"].sum()
+        total_secondary_volume = df_final["Volume cumulé des mots clés secondaire"].sum()
 
-        # Afficher les métriques et les graphiques
+        # Afficher les métriques et des graphiques
         col1, col2, col3 = st.columns(3)
 
         with col1:
@@ -110,7 +110,7 @@ def main():
                 "Values": [total_primary_keywords, total_secondary_keywords],
             }
             st.bar_chart(pd.DataFrame(data).set_index("Metrics"))
-                
+
         with col3:
             st.text("Volume de Recherche")
             data = {
