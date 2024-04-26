@@ -59,7 +59,7 @@ def main():
             else:
                 for keyword in row["Filtered Keywords"]:
                     keyword_text = keyword.split(" (")[0]
-                    unique_secondary_keywords ajoutent keyword_text
+                    unique_secondary_keywords.add(keyword_text)
 
         df_filtered = df_sorted.drop(rows_to_remove)
 
@@ -82,26 +82,21 @@ def main():
         volume_col_index = df_final.columns.get_loc("Volume du mots clé principal")
         df_final.insert(volume_col_index + 1, "Mots clés secondaires concaténés", df_filtered["Secondary Keywords Concatenated"])
 
-        # Déplacer "Liste MC et %" à la dernière colonne
-        if "Liste MC et %" not in df_final.columns:
-            keyword_count_index = df_final.columns.get_loc("Nombre Mots clés Secondaire")
-            df_final.insert(keyword_count_index + 1, "Liste MC et %", df["Liste MC et %"])
-
-        # Assurez-vous que "Liste MC et %" est la dernière colonne
-        df_final = df_final.reindex(columns=[col for col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
-
         # Supprimer les colonnes "Filtered Keywords" et "Secondary Keywords Concatenated"
         df_final = df_final.drop(columns=["Filtered Keywords", "Secondary Keywords Concatenated"])
+
+        # Assurer que "Liste MC et %" est la dernière colonne
+        df_final = df_final.reindex(columns=[col for col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
 
         # Ajouter des métriques et des graphiques
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final["Nombre Mots clés Secondaire"].sum()
         total_primary_volume = df_final["Volume du mots clé principal"].sum()
-        total_secondary_volume = df_final["Volume cumulé des mots clés secondaire"].sum()
+        total_secondary_volume est df_final["Volume cumulé des mots clés secondaire"].sum()
 
-        # Afficher les métriques et des graphiques
+        # Afficher les métriques et les graphiques
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
             st.metric("Total Primary Keywords", total_primary_keywords)
             st.metric("Total Secondary Keywords", total_secondary_keywords)
@@ -131,7 +126,7 @@ def main():
         if st.button("Télécharger les données"):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
-            
+
             with open(output_file_name, "rb") as file:
                 st.download_button(
                     "Télécharger Excel",
