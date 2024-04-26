@@ -98,10 +98,10 @@ def main():
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric("Total Primary Keywords", total_primary_keywords)
-            st.metric("Total Secondary Keywords", total_secondary_keywords)
-            st.metric("Total Primary Volume", total_primary_volume)
-            st.metric("Total Cumulative Secondary Volume", total_secondary_volume)
+            st.metric("Nombre Mots clés principaux", total_primary_keywords)
+            st.metric("Nombre Mots clés secondaires", total_secondary_keywords)
+            st.metric("Volume Recherche Mots clés principaux", total_primary_volume)
+            st.metric("Volume Recherche Mots clés secondaires", total_secondary_volume)
 
         with col2:
             st.text("Nombre de Mots Clés")
