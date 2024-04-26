@@ -107,7 +107,7 @@ def main():
         with col2:
             st.text("Nombre de Mots Clés")
             data = {
-                "Metrics": ["Primary", "Secondary"],
+                "Metrics": ["Principaux", "Secondaires"],
                 "Values": [total_primary_keywords, total_secondary_keywords],
             }
             st.bar_chart(pd.DataFrame(data).set_index("Metrics"))
