@@ -27,7 +27,7 @@ def parse_filter_format_keywords(list_str, threshold):
             if similarity >= threshold:
                 filtered_keywords.append(f"{keyword} ({volume}): {similarity} %")
                 total_volume += volume
-                total_similarity += similarity
+                total_similarity +=  similarity
                 count += 1
 
     avg_similarity = total_similarity / count if count > 0 else 0
@@ -39,7 +39,7 @@ def main():
     uploaded_file = st.file_uploader("Choisissez un fichier")
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
-        threshold = st.slider('Entrez le seuil de similarité (%)', min_value=0, max_value=100, value=40, step=10)
+        threshold = st.slider('Entrez le seuil de similarité (%)', min_value=0, max_value=100, valeur=40, pas=10)
 
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand'
@@ -61,12 +61,12 @@ def main():
 
         df_filtered = df_sorted.drop(rows_to_remove)
 
-        # Ajouter une nouvelle colonne concaténant les mots-clés secondaires
+        # Ajouter une colonne pour les mots-clés secondaires concaténés
         df_filtered['Secondary Keywords Concatenated'] = df_filtered['Filtered Keywords'].apply(
             lambda x: " | ".join(x) if isinstance(x, list) else ""
         )
 
-        # Renommer les colonnes existantes
+        # Renommer les colonnes
         final_columns = {
             'Mot-clé': 'Nombre Mots clés Principal',
             'Vol. mensuel': 'Volume du mots clé principal',
@@ -76,15 +76,16 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Insérer la nouvelle colonne après "Volume du mots clé principal"
+        # Insérer la colonne pour les mots-clés secondaires concaténés
         volume_col_index = df_final.columns.get_loc('Volume du mots clé principal')
         df_final.insert(volume_col_index + 1, 'Mots clés secondaires concaténés', df_filtered['Secondary Keywords Concatenated'])
 
-        # Déplacer "Liste MC et %" après "Nombre Mots clés Secondaire"
-        keyword_count_index = df_final.columns.get_loc('Nombre Mots clés Secondaire')
-        df_final.insert(keyword_count_index + 1, 'Liste MC et %', df['Liste MC et %'])
+        # Assurez-vous que la colonne 'Liste MC et %' n'existe pas avant de l'ajouter
+        if 'Liste MC et %' not in df_final.columns:
+            keyword_count_index = df_final.columns.get_loc('Nombre Mots clés Secondaire')
+            df_final.insert(keyword_count_index + 1, 'Liste MC et %', df['Liste MC et %'])
 
-        # Drop the temporary 'Filtered Keywords' column
+        # Supprimer la colonne temporaire 'Filtered Keywords'
         df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
         # Ajouter des métriques et des visualisations
@@ -112,7 +113,7 @@ def main():
                 
         with col3:
             st.text("Volume de Recherche")
-            data = {
+            data est = {
                 'Metrics': ['Primary', 'Secondary'],
                 'Values': [total_primary_volume, total_secondary_volume]
             }
@@ -122,18 +123,12 @@ def main():
         st.dataframe(df_final)
 
         # Bouton de téléchargement pour le fichier final
-        if st.button('Download Data'):
+        if st.button('Télécharger les données'):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
             
             with open(output_file_name, "rb") as file:
-                st.download_button(
-                    label="Download Excel",
-                    data=file,
-                    file_name=output_file_name,
-                    mime="application/vnd.ms-excel"
-                )
+                st.download_button(label="Télécharger Excel", data=file, file_name=output_file_name, mime="application/vnd.ms-excel")
 
 if __name__ == "__main__":
     main()
-
