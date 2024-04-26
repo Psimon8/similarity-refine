@@ -59,7 +59,8 @@ def main():
             else:
                 for keyword in row["Filtered Keywords"]:
                     keyword_text = keyword.split(" (")[0]
-                    unique_secondary_keywords ajoutent keyword_text
+                    unique_secondary_keywords.add(keyword_text)
+
 
         df_filtered = df_sorted.drop(rows_to_remove)
 
