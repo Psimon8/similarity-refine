@@ -7,6 +7,7 @@ st.set_page_config(
     page_icon="🥥"
 )
 
+# Fonction pour filtrer et formater les mots-clés
 def parse_filter_format_keywords(list_str, threshold):
     if not isinstance(list_str, str):
         return [], 0, 0, 0
@@ -48,6 +49,7 @@ def main():
         rows_to_remove = []
         unique_secondary_keywords = set()
 
+        # Supprimer les lignes où les mots-clés primaires se dupliquent
         for index, row in df_sorted.iterrows():
             primary_keyword_text = row['Mot-clé'].split(' (')[0]
             if primary_keyword_text in unique_secondary_keywords:
@@ -58,32 +60,40 @@ def main():
                     unique_secondary_keywords.add(keyword_text)
 
         df_filtered = df_sorted.drop(rows_to_remove)
-        
+
+        # Créer la nouvelle colonne des mots-clés secondaires concaténés
+        df_filtered['Secondary Keywords Concatenated'] = df_filtered['Filtered Keywords'].apply(lambda x: ', '.join(x))
+
+        # Renommer les colonnes existantes
         final_columns = {
             'Mot-clé': 'Nombre Mots clés Principal',
             'Vol. mensuel': 'Volume du mots clé principal',
             'Total Volume': 'Volume cumulé des mots clés secondaire',
-            'Avg Similarity': '% moyen des degre de similarité des mots clés secondaire',
+            'Avg Similarity': '% moyen des degrés de similarité des mots clés secondaire',
             'Keyword Count': 'Nombre Mots clés Secondaire'
         }
         df_final = df_filtered.rename(columns=final_columns)
 
+        # Ajouter des colonnes pour les MC secondaires séparés
         max_keywords = df_final['Nombre Mots clés Secondaire'].max() if pd.notna(df_final['Nombre Mots clés Secondaire'].max()) else 0
         
-        # Rename columns to 'MC secondaire X'
+        # Renommer les colonnes pour 'MC secondaire X'
         for i in range(1, int(max_keywords) + 1):
             df_final[f'MC secondaire {i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i - 1] if len(x) >= i else None)
 
-        # Drop the temporary 'Filtered Keywords' column
+        # Supprimer la colonne temporaire 'Filtered Keywords'
         df_final.drop('Filtered Keywords', axis=1, inplace=True)
 
-        # Add metrics and visualizations
+        # Supprimer la colonne 'Liste MC et %'
+        df_final.drop('Liste MC et %', axis=1, inplace=True)
+
+        # Ajouter des métriques et des visualisations
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final['Nombre Mots clés Secondaire'].sum()
         total_primary_volume = df_final['Volume du mots clé principal'].sum()
         total_secondary_volume = df_final['Volume cumulé des mots clés secondaire'].sum()
 
-        # Metrics and visualizations
+        # Colonnes pour les métriques
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -108,10 +118,10 @@ def main():
             }
             st.bar_chart(pd.DataFrame(data).set_index('Metrics'))
 
-        # Show final DataFrame
+        # Afficher le DataFrame final
         st.dataframe(df_final)
 
-        # Download button for the final data
+        # Bouton de téléchargement pour le fichier final
         if st.button('Download Data'):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
