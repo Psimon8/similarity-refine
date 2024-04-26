@@ -23,7 +23,7 @@ def parse_filter_format_keywords(list_str, threshold):
         if match:
             keyword, volume, similarity = match.groups()
             volume = int(volume)
-            similarity = float similarity
+            similarity = float (similarity)
             if similarity >= threshold:
                 filtered_keywords.append(f"{keyword} ({volume}): {similarity:.2f} %")
                 total_volume += volume
