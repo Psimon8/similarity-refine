@@ -86,7 +86,7 @@ def main():
         df_final = df_final.drop(columns=["Filtered Keywords", "Secondary Keywords Concatenated"])
 
         # Assurer que "Liste MC et %" est la dernière colonne
-        df_final = df_final.reindex(columns=[col pour col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
+        df_final = df_final.reindex(columns=[col for col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
 
         # Ajouter des métriques et des graphiques
         total_primary_keywords = len(df_final)
