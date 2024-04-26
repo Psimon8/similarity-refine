@@ -70,11 +70,11 @@ def main():
 
         # Renommer les colonnes existantes
         final_columns = {
-            "Mot-clé": "Nombre Mots clés Principal",
+            "Mot-clé": "Mot clé Principal",
             "Vol. mensuel": "Volume du mots clé principal",
-            "Total Volume": "Volume cumulé des mots clés secondaire",
+            "Total Volume": "Volume cumulé des mots clés secondaires",
             "Avg Similarity": "% moyen des degrés de similarité des mots clés secondaire",
-            "Keyword Count": "Nombre Mots clés Secondaire",
+            "Keyword Count": "Nombre Mots clés Secondaires",
         }
         df_final = df_filtered.rename(columns=final_columns)
 
