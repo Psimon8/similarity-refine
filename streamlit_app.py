@@ -39,7 +39,7 @@ def main():
     uploaded_file = st.file_uploader("Choisissez un fichier")
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
-        threshold = st.slider('Entrez le seuil de similarité (%)', min_value=0, max_value=100, value=40, pas=10)
+        threshold = st.slider('Entrez le seuil de similarité (%)', min_value=0, max_value=100, value=40, step=10)
 
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand'
