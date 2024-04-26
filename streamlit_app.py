@@ -80,7 +80,7 @@ def main():
 
         # Insérer la colonne pour les mots-clés secondaires concaténés
         volume_col_index = df_final.columns.get_loc("Volume du mots clé principal")
-        df_final.insert(volume_col_index + 1, "Mots clés secondaires concaténés", df_filtered["Secondary Keywords Concatenated"])
+        df_final.insert(volume_col_index + 1, "Mots clés secondaires", df_filtered["Secondary Keywords Concatenated"])
 
         # Supprimer les colonnes "Filtered Keywords" et "Secondary Keywords Concatenated"
         df_final = df_final.drop(columns=["Filtered Keywords", "Secondary Keywords Concatenated"])
