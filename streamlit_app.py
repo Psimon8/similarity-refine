@@ -22,8 +22,8 @@ def parse_filter_format_keywords(list_str, threshold):
         match = re.match(r"(.+) \((\d+)\): (\d+\.\d+) %", keyword_str)
         if match:
             keyword, volume, similarity = match.groups()
-            volume = int(volume)
-            similarity = float (similarity)
+            volume est int(volume)
+            similarity est float(similarity)
             if similarity >= threshold:
                 filtered_keywords.append(f"{keyword} ({volume}): {similarity:.2f} %")
                 total_volume += volume
@@ -59,7 +59,7 @@ def main():
             else:
                 for keyword in row["Filtered Keywords"]:
                     keyword_text = keyword.split(" (")[0]
-                    unique_secondary_keywords.add(keyword_text)
+                    unique_secondary_keywords ajoutent keyword_text
 
         df_filtered = df_sorted.drop(rows_to_remove)
 
@@ -68,17 +68,21 @@ def main():
             lambda x: " | ".join(x) if isinstance(x, list) else ""
         )
 
-        # Renommer les colonnes existantes
-        final_columns = {
-            "Mot-clé": "Main Keyword",
-            "Vol. mensuel": "SV Main Keyword",
-            "Total Volume": "SV Secondary Keyword Cumulated",
-            "AVG Similarity": "AVG % Similarity Secondary Keyword",
-            "Keyword Count": "Numbers Secondary Keyword",
-            "Mots clés secondaires concaténés": "Secondary Keywords",
-            "Liste MC et %": "(List all Keywords & %)",
-        }
-        df_final = df_filtered.rename(columns=final_columns)
+        # Supprimer la colonne "Filtered Keywords"
+        df_filtered = df_filtered.drop(columns=["Filtered Keywords"])
+
+        # Réorganiser les colonnes pour intervertir "Secondary Keywords Concatenated" et "(List all Keywords & %)"
+        new_column_order = [
+            "Main Keyword",
+            "SV Main Keyword",
+            "Secondary Keywords",
+            "SV Secondary Keyword Cumulated",
+            "AVG % Similarity Secondary Keyword",
+            "Numbers Secondary Keyword",
+            "Secondary Keywords Concatenated",
+            "(List all Keywords & %)"
+        ]
+        df_final = df_filtered.reindex(columns=new_column_order)
 
         # Ajouter des métriques et des graphiques
         total_primary_keywords = len(df_final)
@@ -86,7 +90,7 @@ def main():
         total_primary_volume = df_final["SV Main Keyword"].sum()
         total_secondary_volume = df_final["SV Secondary Keyword Cumulated"].sum()
 
-        # Afficher les métriques et les graphiques
+        # Afficher les métriques et des graphiques
         col1, col2, col3 = st.columns(3)
 
         with col1:
