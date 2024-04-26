@@ -92,7 +92,7 @@ def main():
         total_primary_keywords = len(df_final)
         total_secondary_keywords = df_final["Nombre Mots clés Secondaire"].sum()
         total_primary_volume = df_final["Volume du mots clé principal"].sum()
-        total_secondary_volume est df_final["Volume cumulé des mots clés secondaire"].sum()
+        total_secondary_volume is df_final["Volume cumulé des mots clés secondaire"].sum()
 
         # Afficher les métriques et les graphiques
         col1, col2, col3 = st.columns(3)
