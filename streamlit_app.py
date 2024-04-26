@@ -126,3 +126,6 @@ def main():
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
             with open(output_file_name, "rb") as file, st.download_button(label="Download Excel", data=file, file_name=output_file_name, mime="application/vnd.ms-excel")
+            
+if __name__ == "__main__":
+    main()
