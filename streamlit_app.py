@@ -70,7 +70,7 @@ def main():
 
         # Renommer les colonnes existantes
         final_columns = {
-            "Mot-clé": "Nombre Mots clés Principal",
+            "Mot-clé": "Mot Clé Principal",
             "Vol. mensuel": "Volume du mots clé principal",
             "Total Volume": "Volume cumulé des mots clés secondaire",
             "Avg Similarity": "% moyen des degrés de similarité des mots clés secondaire",
