@@ -113,7 +113,7 @@ def main():
                 
         with col3:
             st.text("Volume de Recherche")
-            data est = {
+            data = {
                 'Metrics': ['Primary', 'Secondary'],
                 'Values': [total_primary_volume, total_secondary_volume]
             }
