@@ -50,12 +50,12 @@ def main():
         unique_secondary_keywords = set()
 
         # Supprimer les lignes où les mots-clés primaires se dupliquent
-        pour index, row in df_sorted.iterrows():
+        for index, row in df_sorted.iterrows():
             primary_keyword_text = row['Mot-clé'].split(' (')[0]
             if primary_keyword_text in unique_secondary_keywords:
                 rows_to_remove.append(index)
             else:
-                pour keyword in row['Filtered Keywords']:
+                for keyword in row['Filtered Keywords']:
                     keyword_text = keyword.split(' (')[0]
                     unique_secondary_keywords.add(keyword_text)
 
