@@ -1,3 +1,6 @@
 [theme]
 base="dark"
 primaryColor="#b04bff"
+
+[browser]
+wideMode = True
