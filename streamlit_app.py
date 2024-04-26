@@ -30,16 +30,16 @@ def parse_filter_format_keywords(list_str, threshold):
                 total_similarity += similarity
                 count += 1
 
-    avg_similarity = total_similarity / count if count > 0 else 0
+    avg_similarity = total_similarity / count si count > 0 else 0
     return filtered_keywords, total_volume, avg_similarity, count
 
 def main():
     st.title('Similarity Refine')
 
-    uploaded_file = st.file_uploader("Choose a file")
+    uploaded_file = st.file_uploader("Choisissez un fichier")
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
-        threshold = st.slider('Enter the similarity threshold (%)', min_value=0, max_value=100, value=40, step=10)
+        threshold = st.slider('Entrez le seuil de similarité (%)', min_value=0, max_value=100, value=40, step=10)
 
         df[['Filtered Keywords', 'Total Volume', 'Avg Similarity', 'Keyword Count']] = df.apply(
             lambda x: parse_filter_format_keywords(x['Liste MC et %'], threshold), axis=1, result_type='expand'
@@ -61,8 +61,10 @@ def main():
 
         df_filtered = df_sorted.drop(rows_to_remove)
 
-        # Créer la nouvelle colonne des mots-clés secondaires concaténés
-        df_filtered['Secondary Keywords Concatenated'] = df_filtered['Filtered Keywords'].apply(lambda x: ', '.join(x))
+        # Ajouter une nouvelle colonne concaténant les mots-clés secondaires
+        df_filtered['Secondary Keywords Concatenated'] = df_filtered['Filtered Keywords'].apply(
+            lambda x: " | ".join(x) if isinstance(x, list) else ""
+        )
 
         # Renommer les colonnes existantes
         final_columns = {
@@ -74,18 +76,16 @@ def main():
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Ajouter des colonnes pour les MC secondaires séparés
-        max_keywords = df_final['Nombre Mots clés Secondaire'].max() if pd.notna(df_final['Nombre Mots clés Secondaire'].max()) else 0
-        
-        # Renommer les colonnes pour 'MC secondaire X'
-        for i in range(1, int(max_keywords) + 1):
-            df_final[f'MC secondaire {i}'] = df_final['Filtered Keywords'].apply(lambda x: x[i - 1] if len(x) >= i else None)
+        # Insérer la nouvelle colonne après "Volume du mots clé principal"
+        volume_col_index = df_final.columns.get_loc('Volume du mots clé principal')
+        df_final.insert(volume_col_index + 1, 'Mots clés secondaires concaténés', df_filtered['Secondary Keywords Concatenated'])
 
-        # Supprimer la colonne temporaire 'Filtered Keywords'
+        # Déplacer "Liste MC et %" après "Nombre Mots clés Secondaire"
+        keyword_count_index = df_final.columns.get_loc('Nombre Mots clés Secondaire')
+        df_final.insert(keyword_count_index + 1, 'Liste MC et %', df['Liste MC et %'])
+
+        # Drop the temporary 'Filtered Keywords' column
         df_final.drop('Filtered Keywords', axis=1, inplace=True)
-
-        # Supprimer la colonne 'Liste MC et %'
-        df_final.drop('Liste MC et %', axis=1, inplace=True)
 
         # Ajouter des métriques et des visualisations
         total_primary_keywords = len(df_final)
@@ -93,7 +93,7 @@ def main():
         total_primary_volume = df_final['Volume du mots clé principal'].sum()
         total_secondary_volume = df_final['Volume cumulé des mots clés secondaire'].sum()
 
-        # Colonnes pour les métriques
+        # Afficher les métriques et les graphiques
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -125,8 +125,4 @@ def main():
         if st.button('Download Data'):
             output_file_name = f"processed_data_threshold_{threshold}.xlsx"
             df_final.to_excel(output_file_name, index=False)
-            with open(output_file_name, "rb") as file:
-                st.download_button(label="Download Excel", data=file, file_name=output_file_name, mime="application/vnd.ms-excel")
-
-if __name__ == "__main__":
-    main()
+            with open(output_file_name, "rb") as file, st.download_button(label="Download Excel", data=file, file_name=output_file_name, mime="application/vnd.ms-excel")
