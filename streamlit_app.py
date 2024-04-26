@@ -23,7 +23,7 @@ def parse_filter_format_keywords(list_str, threshold):
         if match:
             keyword, volume, similarity = match.groups()
             volume = int(volume)
-            similarity = float(similarity)
+            similarity = float similarity
             if similarity >= threshold:
                 filtered_keywords.append(f"{keyword} ({volume}): {similarity:.2f} %")
                 total_volume += volume
@@ -70,31 +70,23 @@ def main():
 
         # Renommer les colonnes existantes
         final_columns = {
-            "Mot-clé": "Nombre Mots clés Principal",
-            "Vol. mensuel": "Volume du mots clé principal",
-            "Total Volume": "Volume cumulé des mots clés secondaire",
-            "Avg Similarity": "% moyen des degrés de similarité des mots clés secondaire",
-            "Keyword Count": "Nombre Mots clés Secondaire",
+            "Mot-clé": "Main Keyword",
+            "Vol. mensuel": "SV Main Keyword",
+            "Total Volume": "SV Secondary Keyword Cumulated",
+            "AVG Similarity": "AVG % Similarity Secondary Keyword",
+            "Keyword Count": "Numbers Secondary Keyword",
+            "Mots clés secondaires concaténés": "Secondary Keywords",
+            "Liste MC et %": "(List all Keywords & %)",
         }
         df_final = df_filtered.rename(columns=final_columns)
 
-        # Insérer la colonne pour les mots-clés secondaires concaténés
-        volume_col_index = df_final.columns.get_loc("Volume du mots clé principal")
-        df_final.insert(volume_col_index + 1, "Mots clés secondaires concaténés", df_filtered["Secondary Keywords Concatenated"])
-
-        # Supprimer les colonnes "Filtered Keywords" et "Secondary Keywords Concatenated"
-        df_final = df_final.drop(columns=["Filtered Keywords", "Secondary Keywords Concatenated"])
-
-        # Assurer que "Liste MC et %" est la dernière colonne
-        df_final = df_final.reindex(columns=[col for col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
-
         # Ajouter des métriques et des graphiques
         total_primary_keywords = len(df_final)
-        total_secondary_keywords = df_final["Nombre Mots clés Secondaire"].sum()
-        total_primary_volume = df_final["Volume du mots clé principal"].sum()
-        total_secondary_volume = df_final["Volume cumulé des mots clés secondaire"].sum()
+        total_secondary_keywords = df_final["Numbers Secondary Keyword"].sum()
+        total_primary_volume = df_final["SV Main Keyword"].sum()
+        total_secondary_volume = df_final["SV Secondary Keyword Cumulated"].sum()
 
-        # Afficher les métriques et des graphiques
+        # Afficher les métriques et les graphiques
         col1, col2, col3 = st.columns(3)
 
         with col1:
