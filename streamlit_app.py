@@ -61,7 +61,6 @@ def main():
                     keyword_text = keyword.split(" (")[0]
                     unique_secondary_keywords.add(keyword_text)
 
-
         df_filtered = df_sorted.drop(rows_to_remove)
 
         # Ajouter une colonne pour les mots-clés secondaires concaténés
@@ -69,27 +68,31 @@ def main():
             lambda x: " | ".join(x) if isinstance(x, list) else ""
         )
 
-        # Supprimer la colonne "Filtered Keywords"
-        df_filtered = df_filtered.drop(columns=["Filtered Keywords"])
+        # Renommer les colonnes existantes
+        final_columns = {
+            "Mot-clé": "Nombre Mots clés Principal",
+            "Vol. mensuel": "Volume du mots clé principal",
+            "Total Volume": "Volume cumulé des mots clés secondaire",
+            "Avg Similarity": "% moyen des degrés de similarité des mots clés secondaire",
+            "Keyword Count": "Nombre Mots clés Secondaire",
+        }
+        df_final = df_filtered.rename(columns=final_columns)
 
-        # Réorganiser les colonnes pour intervertir "Secondary Keywords Concatenated" et "(List all Keywords & %)"
-        new_column_order = [
-            "Main Keyword",
-            "SV Main Keyword",
-            "Secondary Keywords",
-            "SV Secondary Keyword Cumulated",
-            "AVG % Similarity Secondary Keyword",
-            "Numbers Secondary Keyword",
-            "Secondary Keywords Concatenated",
-            "(List all Keywords & %)"
-        ]
-        df_final = df_filtered.reindex(columns=new_column_order)
+        # Insérer la colonne pour les mots-clés secondaires concaténés
+        volume_col_index = df_final.columns.get_loc("Volume du mots clé principal")
+        df_final.insert(volume_col_index + 1, "Mots clés secondaires concaténés", df_filtered["Secondary Keywords Concatenated"])
+
+        # Supprimer les colonnes "Filtered Keywords" et "Secondary Keywords Concatenated"
+        df_final = df_final.drop(columns=["Filtered Keywords", "Secondary Keywords Concatenated"])
+
+        # Assurer que "Liste MC et %" est la dernière colonne
+        df_final = df_final.reindex(columns=[col for col in df_final.columns if col != "Liste MC et %"] + ["Liste MC et %"])
 
         # Ajouter des métriques et des graphiques
         total_primary_keywords = len(df_final)
-        total_secondary_keywords = df_final["Numbers Secondary Keyword"].sum()
-        total_primary_volume = df_final["SV Main Keyword"].sum()
-        total_secondary_volume = df_final["SV Secondary Keyword Cumulated"].sum()
+        total_secondary_keywords = df_final["Nombre Mots clés Secondaire"].sum()
+        total_primary_volume = df_final["Volume du mots clé principal"].sum()
+        total_secondary_volume = df_final["Volume cumulé des mots clés secondaire"].sum()
 
         # Afficher les métriques et des graphiques
         col1, col2, col3 = st.columns(3)
@@ -134,3 +137,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
