@@ -133,3 +133,7 @@ def main():
                     file_name=output_file_name,
                     mime="application/vnd.ms-excel"
                 )
+
+if __name__ == "__main__":
+    main()
+
