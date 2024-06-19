@@ -1,2 +1,3 @@
 1- DONE colonne qui concat les mots-clés du cluster plutôt qu'en plusieurs colonnes
 2-Push 1
+3-Push 2
